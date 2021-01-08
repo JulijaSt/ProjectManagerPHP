@@ -1,0 +1,15 @@
+.footer {
+  background-color: $header;
+  color: $background;
+  text-align: right;
+  height: 4rem;
+  padding: 0 1.55rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+}
