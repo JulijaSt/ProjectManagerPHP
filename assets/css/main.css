@@ -12,6 +12,7 @@ body {
 .main {
   min-height: calc(100vh - 9rem);
   background-color: #EAE7DC;
+  padding: 3rem;
 }
 
 .header {
@@ -60,8 +61,8 @@ body {
 }
 
 .header__link:hover {
-  background-color: #8E8D8A;
-  color: #fff;
+  background-color: #D8C3A5;
+  color: #E85A4F;
 }
 
 .header__link--active {
@@ -100,5 +101,39 @@ body {
   position: relative;
   z-index: 1;
   text-transform: uppercase;
+}
+
+.data {
+  font-size: 1.25rem;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.data__head {
+  color: #E85A4F;
+  background-color: #D8C3A5;
+  font-weight: 600;
+}
+
+.data__row, .data__column {
+  border: 1px solid #E85A4F;
+  border-collapse: collapse;
+  padding: 0.7rem 1rem;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.data__column:first-child {
+  width: 6%;
+  text-align: center;
+}
+
+.data__column:last-child {
+  width: 20%;
+}
+
+.data__body-row:hover {
+  background-color: #E98074;
 }
 /*# sourceMappingURL=main.css.map */

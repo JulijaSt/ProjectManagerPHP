@@ -1,0 +1,36 @@
+.data {
+  font-size: 1.25rem;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+
+  &__head {
+    color: $active;
+    background-color: $line;
+    font-weight: 600;
+  }
+
+  &__row,
+  &__column {
+    border: 1px solid $active;
+    border-collapse: collapse;
+    padding: 0.7rem 1rem;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  &__column:first-child {
+    width: 6%;
+    text-align: center;
+  }
+
+  &__column:last-child {
+    width: 20%;
+  }
+
+  &__body-row {
+    &:hover {
+      background-color: $header;
+    }
+  }
+}
