@@ -1,0 +1,13 @@
+.btn {
+    font-size: 1.25rem;
+    background-color: $header;
+    border-radius: 0.5rem;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+    color: $background;
+
+    &:hover {
+        background-color: $active;
+        color: $background;
+    }
+}

@@ -139,4 +139,18 @@ body {
   background-color: #374785;
   color: #EAE7DC;
 }
+
+.btn {
+  font-size: 1.25rem;
+  background-color: #E98074;
+  border-radius: 0.5rem;
+  padding: 0.2rem 1rem;
+  cursor: pointer;
+  color: #EAE7DC;
+}
+
+.btn:hover {
+  background-color: #E85A4F;
+  color: #EAE7DC;
+}
 /*# sourceMappingURL=main.css.map */

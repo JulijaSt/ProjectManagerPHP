@@ -9,6 +9,20 @@ $connection = mysqli_connect($servername, $username, $password, $dbname);
 if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
 }
+
+if (isset($_GET["action"]) and $_GET["action"] == "delete") {
+    $sql = "DELETE FROM projects WHERE project_id = ?";
+    $stmt = $connection->prepare($sql);
+    $stmt->bind_param("i", $_GET["id"]);
+    $res = $stmt->execute();
+
+    $stmt->close();
+    mysqli_close($connection);
+
+    header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
+    die();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -52,7 +66,7 @@ if (!$connection) {
                         print("<td class='data__column'>" . $idNo++ . "</td>");
                         print("<td class='data__column'>" . $row["project_title"] . "</td>");
                         print("<td class='data__column'>" . $row["employees"] . "</td>");
-                        print("<td class='data__column'></td>");
+                        print("<td class='data__column'><a href='?action=delete&id=" . $row["project_id"] . "'><button class='btn'>DELETE</button></a></td>");
                         print("</tr>");
                     }
                 } else {
