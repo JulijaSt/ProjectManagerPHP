@@ -30,8 +30,7 @@
     }
 
     &:hover {
-      background-color: $line;
-      color: $active;
+      background-color: $accents2;
     }
 
     &--active {
@@ -39,7 +38,6 @@
 
       &:hover {
         background-color: $active;
-        color: $background;
       }
     }
   }

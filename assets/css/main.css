@@ -61,8 +61,7 @@ body {
 }
 
 .header__link:hover {
-  background-color: #D8C3A5;
-  color: #E85A4F;
+  background-color: #374785;
 }
 
 .header__link--active {
@@ -71,7 +70,6 @@ body {
 
 .header__link--active:hover {
   background-color: #E85A4F;
-  color: #EAE7DC;
 }
 
 .header__title {
@@ -112,12 +110,16 @@ body {
 
 .data__head {
   color: #E85A4F;
-  background-color: #D8C3A5;
+  background-color: #24305E;
   font-weight: 600;
 }
 
+.data__head .data__column:not(:last-of-type) {
+  border-right-color: #EAE7DC;
+}
+
 .data__row, .data__column {
-  border: 1px solid #E85A4F;
+  border: 1px solid #24305E;
   border-collapse: collapse;
   padding: 0.7rem 1rem;
   vertical-align: middle;
@@ -134,6 +136,7 @@ body {
 }
 
 .data__body-row:hover {
-  background-color: #E98074;
+  background-color: #374785;
+  color: #EAE7DC;
 }
 /*# sourceMappingURL=main.css.map */

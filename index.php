@@ -35,12 +35,15 @@ if (!$connection) {
                 <tr class="data__row">
                     <th class="data__column data__column--head">Id</th>
                     <th class="data__column data__column--head">Project</th>
+                    <th class="data__column data__column--head">Employees</th>
                     <th class="data__column data__column--head">Action</th>
                 </tr>
             </thead>
             <tbody class="data__body">
                 <?php
-                $sql = "SELECT project_id, project_title FROM projects";
+                $sql = "SELECT projects.project_id, projects.project_title, GROUP_CONCAT(CONCAT_WS('', employees.first_name) SEPARATOR ', ') as employees FROM projects
+                LEFT JOIN employees ON projects.project_id = employees.project_id
+                GROUP BY projects.project_id;";
                 $result = mysqli_query($connection, $sql);
                 $idNo = 1;
                 if (mysqli_num_rows($result) > 0) {
@@ -48,11 +51,13 @@ if (!$connection) {
                         print("<tr class='data__body-row'>");
                         print("<td class='data__column'>" . $idNo++ . "</td>");
                         print("<td class='data__column'>" . $row["project_title"] . "</td>");
+                        print("<td class='data__column'>" . $row["employees"] . "</td>");
                         print("<td class='data__column'></td>");
                         print("</tr>");
                     }
                 } else {
                     print("<tr class='data_body-row'>
+                            <td class='data__column'></td>
                             <td class='data__column'></td>
                             <td class='data__column'></td>
                             <td class='data__column'></td>

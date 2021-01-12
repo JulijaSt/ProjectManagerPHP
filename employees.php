@@ -43,7 +43,8 @@ if (!$connection) {
             </thead>
             <tbody class="data__body">
                 <?php
-                $sql = "SELECT employee_id, first_name, last_name, role, project_id FROM employees";
+                $sql = "SELECT employees.employee_id, employees.first_name, employees.last_name, employees.role, employees.project_id, projects.project_title FROM employees
+                LEFT JOIN projects ON employees.project_id = projects.project_id;";
                 $result = mysqli_query($connection, $sql);
                 $idNo = 1;
                 if (mysqli_num_rows($result) > 0) {
@@ -53,7 +54,7 @@ if (!$connection) {
                         print("<td class='data__column'>" . $row["first_name"] . "</td>");
                         print("<td class='data__column'>" . $row["last_name"] . "</td>");
                         print("<td class='data__column'>" . $row["role"] . "</td>");
-                        print("<td class='data__column'>" . $row["project_id"] . "</td>");
+                        print("<td class='data__column'>" . $row["project_title"] . "</td>");
                         print("<td class='data__column'></td>");
                         print("</tr>");
                     }

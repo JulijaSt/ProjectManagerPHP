@@ -1,4 +1,6 @@
 .data {
+  $this: &;
+
   font-size: 1.25rem;
   width: 100%;
   max-width: 80rem;
@@ -6,13 +8,17 @@
 
   &__head {
     color: $active;
-    background-color: $line;
+    background-color: $accents1;
     font-weight: 600;
+
+    #{$this}__column:not(:last-of-type) {
+      border-right-color: $background;
+    }
   }
 
   &__row,
   &__column {
-    border: 1px solid $active;
+    border: 1px solid $accents1;
     border-collapse: collapse;
     padding: 0.7rem 1rem;
     vertical-align: middle;
@@ -30,7 +36,8 @@
 
   &__body-row {
     &:hover {
-      background-color: $header;
+      background-color: $accents2;
+      color: $background;
     }
   }
 }
