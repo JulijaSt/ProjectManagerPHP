@@ -1,13 +1,22 @@
 .btn {
-    font-size: 1.25rem;
-    background-color: $header;
-    border-radius: 0.5rem;
-    padding: 0.2rem 1rem;
-    cursor: pointer;
-    color: $background;
+  font-size: 1.25rem;
+  background-color: $header;
+  border-radius: 0.5rem;
+  padding: 0.3rem 1rem;
+  cursor: pointer;
+  color: $background;
+  margin: 0.2rem;
+  line-height: 1;
+
+  &:hover {
+    background-color: $active;
+  }
+
+  &--update {
+    background-color: $grey;
 
     &:hover {
-        background-color: $active;
-        color: $background;
+      background-color: $grey2;
     }
+  }
 }
