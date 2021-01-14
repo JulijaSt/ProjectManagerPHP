@@ -19,4 +19,16 @@
       background-color: $grey2;
     }
   }
+
+  &--add {
+    background-color: $accents1;
+    color: $active;
+    margin: 0;
+    padding: 0.4rem 1rem 0.35rem;
+    display: block;
+
+    &:hover {
+      background-color: $accents2;
+    }
+  }
 }

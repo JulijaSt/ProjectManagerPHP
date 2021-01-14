@@ -74,6 +74,36 @@ if (isset($_POST["update"])) {
     }
 }
 
+
+if (isset($_POST["add"])) {
+    $firstName = $_POST["first_name"];
+    $lastName = $_POST["last_name"];
+    $role = $_POST["role"];
+
+    if (empty($_POST["first_name"])) {
+        $firstName_error = "Enter the first name";
+    }
+    if (empty($_POST["last_name"])) {
+        $lastName_error = "Enter the last name";
+    }
+    if (empty($_POST["role"])) {
+        $role_error = "Enter the role";
+    }
+
+    if (!empty($_POST["first_name"]) && !empty($_POST["last_name"]) && !empty($_POST["role"])) {
+
+        $sql = "INSERT INTO employees (first_name, last_name, role) VALUES (?,?,?)";
+        $stmt = $connection->prepare($sql);
+        $stmt->bind_param("sss", $firstName, $lastName, $role);
+        $stmt->execute();
+
+        $stmt->close();
+        mysqli_close($connection);
+
+        header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
+        die();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -171,6 +201,24 @@ if (isset($_POST["update"])) {
                 ?>
             <tbody>
         </table>
+
+        <form action="" method="POST" name="add-employee" class="form form--add">
+            <div class="form__container">
+            <div class="form__block">
+                <input type="text" class="input" name="first_name" value="<?php if (isset($firstName)) print($firstName) ?>" placeholder="First name">
+                <span class="form__error"><?php echo $firstName_error; ?></span>
+            </div>
+            <div class="form__block">
+                <input type="text" class="input" name="last_name" value="<?php if (isset($lastName)) print($lastName) ?>" placeholder="Last name">
+                <span class="form__error"><?php echo $lastName_error; ?></span>
+            </div>
+            <div class="form__block">
+                <input type="text" class="input" name="role" value="<?php if (isset($role)) print($role) ?>" placeholder="Role">
+                <span class="form__error"><?php echo $role_error; ?></span>
+            </div>
+            </div>
+            <input class="btn btn--add" type="submit" name="add" value="ADD EMPLOYEE" />
+        </form>
     </main>
 
     <?php

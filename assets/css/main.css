@@ -124,11 +124,23 @@ body {
   background-color: #686765;
 }
 
+.btn--add {
+  background-color: #24305E;
+  color: #E85A4F;
+  margin: 0;
+  padding: 0.4rem 1rem 0.35rem;
+  display: block;
+}
+
+.btn--add:hover {
+  background-color: #374785;
+}
+
 .data {
   font-size: 1.25rem;
   width: 100%;
   max-width: 80rem;
-  margin: 0 auto;
+  margin: 0 auto 2.5rem;
 }
 
 .data__head {
@@ -203,7 +215,6 @@ body {
 .input {
   background-color: #fff;
   border: 2px solid #000;
-  border-radius: 0.1rem;
   padding: 0.45rem 1rem 0.35rem;
   font-weight: 400;
   font-size: 1rem;
@@ -251,6 +262,20 @@ body {
   margin-bottom: 1rem;
 }
 
+.form__block {
+  display: block;
+}
+
+.form__block:not(:last-of-type) {
+  margin-right: 2rem;
+}
+
+.form__container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
 .form__error {
   display: block;
   color: red;
@@ -258,5 +283,48 @@ body {
   font-weight: 500;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
+}
+
+.form--add {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.form--add .input {
+  background-color: #EAE7DC;
+  border: none;
+  border-bottom: 1px solid #24305E;
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.form--add .input::-webkit-input-placeholder {
+  color: #E85A4F;
+}
+
+.form--add .input:-ms-input-placeholder {
+  color: #E85A4F;
+}
+
+.form--add .input::-ms-input-placeholder {
+  color: #E85A4F;
+}
+
+.form--add .input::placeholder {
+  color: #E85A4F;
+}
+
+.form--add .input:not(:last-of-type) {
+  margin-right: 2rem;
+}
+
+.form--add .form__error {
+  margin-bottom: 0.75rem;
+  color: #168f26;
+}
+
+.form--project .input {
+  max-width: 20%;
 }
 /*# sourceMappingURL=main.css.map */

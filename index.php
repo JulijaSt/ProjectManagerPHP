@@ -61,6 +61,27 @@ if (isset($_POST["update"])) {
     }
 }
 
+if (isset($_POST["add"])) {
+    $project = $_POST["project_title"];
+
+    if (empty($_POST["project_title"])) {
+        $project_error = "Enter the project title";
+    }
+
+    if (!empty($_POST["project_title"])) {
+        $sql = "INSERT INTO projects (project_title) VALUES (?)";
+        $stmt = $connection->prepare($sql);
+        $stmt->bind_param("s", $project);
+        $stmt->execute();
+
+        $stmt->close();
+        mysqli_close($connection);
+
+        header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
+        die();
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +105,7 @@ if (isset($_POST["update"])) {
     <section class="modal">
         <div class="modal__content">
             <h2 class="modal__title">Update project information</h2>
-            <form action="" method="POST" name="updateEmployee" class="form form--project">
+            <form action="" method="POST" name="updateProject" class="form form--project">
                 <div class="form__input-block">
                     <label for="project_title" class="label">Project title</label>
                     <input type="text" class="input" name="project_title" value="<?php print($project) ?>" placeholder="Update project title">
@@ -140,6 +161,14 @@ if (isset($_POST["update"])) {
                 ?>
             <tbody>
         </table>
+
+        <form action="" method="POST" name="add-project" class="form form--add form--project">
+            <div class="form__block">
+                <input type="text" class="input" name="project_title" placeholder="Project title">
+                <span class="form__error"><?php echo $project_error; ?></span>
+            </div>
+            <input class="btn btn--add" type="submit" name="add" value="ADD PROJECT" />
+        </form>
     </main>
 
     <?php
