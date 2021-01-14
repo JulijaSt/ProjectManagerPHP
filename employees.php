@@ -23,16 +23,29 @@ if (isset($_GET["action"]) and $_GET["action"] == "delete") {
     die();
 }
 
-$firstName = "";
-$lastName = "";
-$role = "";
-$firstName_error = "";
-$lastName_error = "";
-$role_error = "";
+$update_arr = array(
+    "firstName" => "",
+    "lastName" => "",
+    "role" => "",
+    "firstName_error" => "",
+    "lastName_error" => "",
+    "role_error" => "",
+    "selected" => ""
+);
+
+$add_arr = array(
+    "firstName" => "",
+    "lastName" => "",
+    "role" => "",
+    "firstName_error" => "",
+    "lastName_error" => "",
+    "role_error" => ""
+);
 
 
 if (isset($_GET["action"]) && $_GET["action"] == "update" && !isset($_POST["update"])) {
-    $updateModal = "SELECT * FROM employees WHERE employee_id = ?";
+    $updateModal = $sql = "SELECT employees.employee_id, employees.first_name, employees.last_name, employees.role, employees.project_id, projects.project_title FROM employees
+    LEFT JOIN projects ON employees.project_id = projects.project_id WHERE employee_id = ?;";
     $stmt = $connection->prepare($updateModal);
     $stmt->bind_param("i", $_GET["id"]);
     $stmt->execute();
@@ -40,30 +53,40 @@ if (isset($_GET["action"]) && $_GET["action"] == "update" && !isset($_POST["upda
 
     if (mysqli_num_rows($result) == 1) {
         $row = $result->fetch_assoc();
-        $firstName = $row["first_name"];
-        $lastName = $row["last_name"];
-        $role = $row["role"];
+        $update_arr["firstName"] = $row["first_name"];
+        $update_arr["lastName"] = $row["last_name"];
+        $update_arr["role"] = $row["role"];
+        if ($row["project_title"]) {
+            $update_arr["selected"] = $row["project_title"];
+        }
     }
 }
 if (isset($_POST["update"])) {
-    $firstName = $_POST["first_name"];
-    $lastName = $_POST["last_name"];
-    $role = $_POST["role"];
+    $update_arr["firstName"] = $_POST["first_name"];
+    $update_arr["lastName"] = $_POST["last_name"];
+    $update_arr["role"] = $_POST["role"];
     $id = $_GET["id"];
+
+    $update_arr["selected"] = $_POST["projects"];
+
+    if ($update_arr["selected"] < 0) {
+        $update_arr["selected"] = null;
+    }
+
     if (empty($_POST["first_name"])) {
-        $firstName_error = "Enter the first name";
+        $update_arr["firstName_error"] = "Enter the first name";
     }
     if (empty($_POST["last_name"])) {
-        $lastName_error = "Enter the last name";
+        $update_arr["lastName_error"] = "Enter the last name";
     }
     if (empty($_POST["role"])) {
-        $role_error = "Enter the role";
+        $update_arr["role_error"] = "Enter the role";
     }
     if (!empty($_POST["first_name"]) && !empty($_POST["last_name"]) && !empty($_POST["role"]) && !empty($_GET["id"])) {
 
-        $sql = "UPDATE employees SET first_name = ? , last_name = ?, role = ? WHERE employee_id = ?";
+        $sql = "UPDATE employees SET first_name = ? , last_name = ?, role = ?, project_id = ? WHERE employee_id = ?";
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param("sssi", $firstName, $lastName, $role, $id);
+        $stmt->bind_param("sssii", $update_arr["firstName"], $update_arr["lastName"], $update_arr["role"], $update_arr["selected"], $id);
         $stmt->execute();
 
         $stmt->close();
@@ -74,27 +97,26 @@ if (isset($_POST["update"])) {
     }
 }
 
-
 if (isset($_POST["add"])) {
-    $firstName = $_POST["first_name"];
-    $lastName = $_POST["last_name"];
-    $role = $_POST["role"];
+    $add_arr["firstName"] = $_POST["first_name"];
+    $add_arr["lastName"] = $_POST["last_name"];
+    $add_arr["role"] = $_POST["role"];
 
     if (empty($_POST["first_name"])) {
-        $firstName_error = "Enter the first name";
+        $add_arr["firstName_error"] = "Enter the first name";
     }
     if (empty($_POST["last_name"])) {
-        $lastName_error = "Enter the last name";
+        $add_arr["lastName_error"] = "Enter the last name";
     }
     if (empty($_POST["role"])) {
-        $role_error = "Enter the role";
+        $add_arr["role_error"] = "Enter the role";
     }
 
     if (!empty($_POST["first_name"]) && !empty($_POST["last_name"]) && !empty($_POST["role"])) {
 
         $sql = "INSERT INTO employees (first_name, last_name, role) VALUES (?,?,?)";
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param("sss", $firstName, $lastName, $role);
+        $stmt->bind_param("sss", $add_arr["firstName"], $add_arr["lastName"], $add_arr["role"]);
         $stmt->execute();
 
         $stmt->close();
@@ -131,19 +153,37 @@ if (isset($_POST["add"])) {
                 <div class="form__twoInput-block">
                     <div class="form__left">
                         <label for="firstName" class="label">First name</label>
-                        <input type="text" class="input" name="first_name" value="<?php print($firstName) ?>" placeholder="Update first name">
-                        <span class="form__error"><?php echo $firstName_error; ?></span>
+                        <input type="text" class="input" name="first_name" value="<?php print($update_arr["firstName"]) ?>" placeholder="Update first name">
+                        <span class="form__error"><?php echo $update_arr["firstName_error"]; ?></span>
                     </div>
                     <div class="form__right">
                         <label for="lastName" class="label">Last name</label>
-                        <input type="text" class="input" name="last_name" value="<?php print($lastName) ?>" placeholder="Update last name">
-                        <span class="form__error"><?php echo $lastName_error; ?></span>
+                        <input type="text" class="input" name="last_name" value="<?php print($update_arr["lastName"]) ?>" placeholder="Update last name">
+                        <span class="form__error"><?php echo $update_arr["lastName_error"]; ?></span>
                     </div>
                 </div>
                 <div class="form__input-block">
                     <label for="role" class="label">Role</label>
-                    <input type="text" class="input" name="role" value="<?php print($role) ?>" placeholder="Update role">
-                    <span class="form__error"><?php echo $role_error; ?></span>
+                    <input type="text" class="input" name="role" value="<?php print($update_arr["role"]) ?>" placeholder="Update role">
+                    <span class="form__error"><?php echo $update_arr["role_error"]; ?></span>
+                </div>
+                <div class="form__input-block">
+                <label for="projects" class="label">Select project</label>
+                <select name="projects" id="projects" class="input">
+                    <option class="select__option" value=<?php print(-1) ?> <?php if ($update_arr["selected"] == "") print("selected") ?> >No project</option>
+                    <?php
+                    $sql = "SELECT project_id, project_title FROM projects;";
+                    $result = mysqli_query($connection, $sql);
+
+                    if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                    ?>
+                            <option class="select__option" value="<?php print($row["project_id"]) ?>" <?php if ($update_arr["selected"] == $row["project_title"]) print("selected") ?>> <?php print($row["project_title"]) ?></option>
+                    <?php
+                        }
+                    }
+                    ?>
+                </select>
                 </div>
                 <input class="btn btn--update" type="submit" name="update" value="UPDATE" />
                 <input class="btn" type="button" name="Close" value="CLOSE" onclick="closeModal()" />
@@ -204,18 +244,18 @@ if (isset($_POST["add"])) {
 
         <form action="" method="POST" name="add-employee" class="form form--add">
             <div class="form__container">
-            <div class="form__block">
-                <input type="text" class="input" name="first_name" value="<?php if (isset($firstName)) print($firstName) ?>" placeholder="First name">
-                <span class="form__error"><?php echo $firstName_error; ?></span>
-            </div>
-            <div class="form__block">
-                <input type="text" class="input" name="last_name" value="<?php if (isset($lastName)) print($lastName) ?>" placeholder="Last name">
-                <span class="form__error"><?php echo $lastName_error; ?></span>
-            </div>
-            <div class="form__block">
-                <input type="text" class="input" name="role" value="<?php if (isset($role)) print($role) ?>" placeholder="Role">
-                <span class="form__error"><?php echo $role_error; ?></span>
-            </div>
+                <div class="form__block">
+                    <input type="text" class="input" name="first_name" value="<?php if (isset($add_arr["firstName"])) print($add_arr["firstName"]) ?>" placeholder="First name">
+                    <span class="form__error"><?php echo $add_arr["firstName_error"]; ?></span>
+                </div>
+                <div class="form__block">
+                    <input type="text" class="input" name="last_name" value="<?php if (isset($add_arr["lastName"])) print($add_arr["lastName"]) ?>" placeholder="Last name">
+                    <span class="form__error"><?php echo $add_arr["lastName_error"]; ?></span>
+                </div>
+                <div class="form__block">
+                    <input type="text" class="input" name="role" value="<?php if (isset($add_arr["role"])) print($add_arr["role"]) ?>" placeholder="Role">
+                    <span class="form__error"><?php echo $add_arr["role_error"]; ?></span>
+                </div>
             </div>
             <input class="btn btn--add" type="submit" name="add" value="ADD EMPLOYEE" />
         </form>

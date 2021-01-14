@@ -23,8 +23,15 @@ if (isset($_GET["action"]) && $_GET["action"] == "delete") {
     die();
 }
 
-$project = "";
-$project_error = "";
+$update_arr = array(
+    "project" => "",
+    "project_error" => "",
+);
+
+$add_arr = array(
+    "project" => "",
+    "project_error" => "",
+);
 
 if (isset($_GET["action"]) and $_GET["action"] == "update") {
     $updateModal = "SELECT project_title FROM projects WHERE project_id = ?";
@@ -35,22 +42,22 @@ if (isset($_GET["action"]) and $_GET["action"] == "update") {
 
     if (mysqli_num_rows($result) == 1) {
         $row = $result->fetch_assoc();
-        $project = $row["project_title"];
+        $update_arr["project"] = $row["project_title"];
     }
 }
 
 if (isset($_POST["update"])) {
-    $project = $_POST["project_title"];
+    $update_arr["project"] = $_POST["project_title"];
     $id = $_GET["id"];
 
     if (empty($_POST["project_title"])) {
-        $project_error = "Enter the project title";
+        $update_arr["project_error"] = "Enter the project title";
     }
 
     if (!empty($_POST["project_title"]) && !empty($_GET["id"])) {
         $sql = "UPDATE projects SET project_title = ? WHERE project_id = ?";
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param("si", $project, $id);
+        $stmt->bind_param("si", $update_arr["project"], $id);
         $stmt->execute();
 
         $stmt->close();
@@ -62,16 +69,16 @@ if (isset($_POST["update"])) {
 }
 
 if (isset($_POST["add"])) {
-    $project = $_POST["project_title"];
+    $add_arr["project"] = $_POST["project_title"];
 
     if (empty($_POST["project_title"])) {
-        $project_error = "Enter the project title";
+        $add_arr["project_error"] = "Enter the project title";
     }
 
     if (!empty($_POST["project_title"])) {
         $sql = "INSERT INTO projects (project_title) VALUES (?)";
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param("s", $project);
+        $stmt->bind_param("s", $add_arr["project"]);
         $stmt->execute();
 
         $stmt->close();
@@ -81,7 +88,6 @@ if (isset($_POST["add"])) {
         die();
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -108,8 +114,8 @@ if (isset($_POST["add"])) {
             <form action="" method="POST" name="updateProject" class="form form--project">
                 <div class="form__input-block">
                     <label for="project_title" class="label">Project title</label>
-                    <input type="text" class="input" name="project_title" value="<?php print($project) ?>" placeholder="Update project title">
-                    <span class="form__error"><?php echo $project_error; ?></span>
+                    <input type="text" class="input" name="project_title" value="<?php print($update_arr["project"]) ?>" placeholder="Update project title">
+                    <span class="form__error"><?php echo $update_arr["project_error"]; ?></span>
                 </div>
                 <input class="btn btn--update" type="submit" name="update" value="UPDATE" />
                 <input class="btn" type="button" name="Close" value="CLOSE" onclick="closeModal()" />
@@ -130,8 +136,8 @@ if (isset($_POST["add"])) {
             <tbody class="data__body">
                 <?php
                 $sql = "SELECT projects.project_id, projects.project_title, GROUP_CONCAT(CONCAT_WS('', employees.first_name) SEPARATOR ', ') as employees FROM projects
-                LEFT JOIN employees ON projects.project_id = employees.project_id
-                GROUP BY projects.project_id;";
+                        LEFT JOIN employees ON projects.project_id = employees.project_id
+                        GROUP BY projects.project_id;";
                 $result = mysqli_query($connection, $sql);
                 $idNo = 1;
                 if (mysqli_num_rows($result) > 0) {
@@ -162,10 +168,10 @@ if (isset($_POST["add"])) {
             <tbody>
         </table>
 
-        <form action="" method="POST" name="add-project" class="form form--add form--project">
+        <form action="" method="POST" name="add-project" class="form form--add form--add-project">
             <div class="form__block">
                 <input type="text" class="input" name="project_title" placeholder="Project title">
-                <span class="form__error"><?php echo $project_error; ?></span>
+                <span class="form__error"><?php echo $add_arr["project_error"]; ?></span>
             </div>
             <input class="btn btn--add" type="submit" name="add" value="ADD PROJECT" />
         </form>
