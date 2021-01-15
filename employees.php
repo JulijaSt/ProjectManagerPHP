@@ -1,24 +1,11 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "mysql";
-$dbname = "project_manager_php";
-
-$connection = mysqli_connect($servername, $username, $password, $dbname);
-
-if (!$connection) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+include "connection.php";
+include "sqlStatmentFunction.php";
 
 if (isset($_GET["action"]) and $_GET["action"] == "delete") {
-    $sql = "DELETE FROM employees WHERE employee_id = ?";
-    $stmt = $connection->prepare($sql);
-    $stmt->bind_param("i", $_GET["id"]);
-    $res = $stmt->execute();
+    deleteEmployee($connection, $_GET["id"]);
 
-    $stmt->close();
     mysqli_close($connection);
-
     header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
     die();
 }
@@ -33,32 +20,15 @@ $update_arr = array(
     "selected" => ""
 );
 
-$add_arr = array(
-    "firstName" => "",
-    "lastName" => "",
-    "role" => "",
-    "firstName_error" => "",
-    "lastName_error" => "",
-    "role_error" => ""
-);
-
-
 if (isset($_GET["action"]) && $_GET["action"] == "update" && !isset($_POST["update"])) {
-    $updateModal = $sql = "SELECT employees.employee_id, employees.first_name, employees.last_name, employees.role, employees.project_id, projects.project_title FROM employees
-    LEFT JOIN projects ON employees.project_id = projects.project_id WHERE employee_id = ?;";
-    $stmt = $connection->prepare($updateModal);
-    $stmt->bind_param("i", $_GET["id"]);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $result = selectEmployee($connection, $_GET["id"]);
 
     if (mysqli_num_rows($result) == 1) {
         $row = $result->fetch_assoc();
         $update_arr["firstName"] = $row["first_name"];
         $update_arr["lastName"] = $row["last_name"];
         $update_arr["role"] = $row["role"];
-        if ($row["project_title"]) {
-            $update_arr["selected"] = $row["project_title"];
-        }
+        $update_arr["selected"] = $row["project_title"];
     }
 }
 if (isset($_POST["update"])) {
@@ -72,56 +42,53 @@ if (isset($_POST["update"])) {
     if ($update_arr["selected"] < 0) {
         $update_arr["selected"] = null;
     }
-
-    if (empty($_POST["first_name"])) {
+    if (empty($update_arr["firstName"])) {
         $update_arr["firstName_error"] = "Enter the first name";
     }
-    if (empty($_POST["last_name"])) {
+    if (empty($update_arr["lastName"])) {
         $update_arr["lastName_error"] = "Enter the last name";
     }
-    if (empty($_POST["role"])) {
+    if (empty($update_arr["role"])) {
         $update_arr["role_error"] = "Enter the role";
     }
-    if (!empty($_POST["first_name"]) && !empty($_POST["last_name"]) && !empty($_POST["role"]) && !empty($_GET["id"])) {
 
-        $sql = "UPDATE employees SET first_name = ? , last_name = ?, role = ?, project_id = ? WHERE employee_id = ?";
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param("sssii", $update_arr["firstName"], $update_arr["lastName"], $update_arr["role"], $update_arr["selected"], $id);
-        $stmt->execute();
+    if (!empty($update_arr["firstName"]) && !empty($update_arr["lastName"]) && !empty($update_arr["role"]) && !empty($id)) {
+        updateEmployee($connection, $update_arr, $id);
 
-        $stmt->close();
         mysqli_close($connection);
-
         header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
         die();
     }
 }
+
+$add_arr = array(
+    "firstName" => "",
+    "lastName" => "",
+    "role" => "",
+    "firstName_error" => "",
+    "lastName_error" => "",
+    "role_error" => ""
+);
 
 if (isset($_POST["add"])) {
     $add_arr["firstName"] = $_POST["first_name"];
     $add_arr["lastName"] = $_POST["last_name"];
     $add_arr["role"] = $_POST["role"];
 
-    if (empty($_POST["first_name"])) {
+    if (empty($add_arr["firstName"])) {
         $add_arr["firstName_error"] = "Enter the first name";
     }
-    if (empty($_POST["last_name"])) {
+    if (empty($add_arr["lastName"])) {
         $add_arr["lastName_error"] = "Enter the last name";
     }
-    if (empty($_POST["role"])) {
+    if (empty($add_arr["role"])) {
         $add_arr["role_error"] = "Enter the role";
     }
 
-    if (!empty($_POST["first_name"]) && !empty($_POST["last_name"]) && !empty($_POST["role"])) {
+    if (!empty($add_arr["firstName"]) && !empty($add_arr["lastName"]) && !empty($add_arr["role"])) {
+        insertEmployee($connection, $add_arr);
 
-        $sql = "INSERT INTO employees (first_name, last_name, role) VALUES (?,?,?)";
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param("sss", $add_arr["firstName"], $add_arr["lastName"], $add_arr["role"]);
-        $stmt->execute();
-
-        $stmt->close();
         mysqli_close($connection);
-
         header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
         die();
     }
@@ -168,22 +135,22 @@ if (isset($_POST["add"])) {
                     <span class="form__error"><?php echo $update_arr["role_error"]; ?></span>
                 </div>
                 <div class="form__input-block">
-                <label for="projects" class="label">Select project</label>
-                <select name="projects" id="projects" class="input">
-                    <option class="select__option" value=<?php print(-1) ?> <?php if ($update_arr["selected"] == "") print("selected") ?> >No project</option>
-                    <?php
-                    $sql = "SELECT project_id, project_title FROM projects;";
-                    $result = mysqli_query($connection, $sql);
+                    <label for="projects" class="label">Select project</label>
+                    <select name="projects" id="projects" class="input">
+                        <option class="select__option" value=<?php print(-1) ?> <?php if ($update_arr["selected"] == "") print("selected") ?>>No project</option>
+                        <?php
+                        $sql = "SELECT project_id, project_title FROM projects;";
+                        $result = mysqli_query($connection, $sql);
 
-                    if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                    ?>
-                            <option class="select__option" value="<?php print($row["project_id"]) ?>" <?php if ($update_arr["selected"] == $row["project_title"]) print("selected") ?>> <?php print($row["project_title"]) ?></option>
-                    <?php
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                        ?>
+                                <option class="select__option" value="<?php print($row["project_id"]) ?>" <?php if ($update_arr["selected"] == $row["project_title"]) print("selected") ?>> <?php print($row["project_title"]) ?></option>
+                        <?php
+                            }
                         }
-                    }
-                    ?>
-                </select>
+                        ?>
+                    </select>
                 </div>
                 <input class="btn btn--update" type="submit" name="update" value="UPDATE" />
                 <input class="btn" type="button" name="Close" value="CLOSE" onclick="closeModal()" />

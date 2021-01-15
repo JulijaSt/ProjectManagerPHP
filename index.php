@@ -1,24 +1,11 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "mysql";
-$dbname = "project_manager_php";
-
-$connection = mysqli_connect($servername, $username, $password, $dbname);
-
-if (!$connection) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+include "connection.php";
+include "sqlStatmentFunction.php";
 
 if (isset($_GET["action"]) && $_GET["action"] == "delete") {
-    $sql = "DELETE FROM projects WHERE project_id = ?";
-    $stmt = $connection->prepare($sql);
-    $stmt->bind_param("i", $_GET["id"]);
-    $res = $stmt->execute();
+    deleteProject($connection, $_GET["id"]);
 
-    $stmt->close();
     mysqli_close($connection);
-
     header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
     die();
 }
@@ -28,17 +15,8 @@ $update_arr = array(
     "project_error" => "",
 );
 
-$add_arr = array(
-    "project" => "",
-    "project_error" => "",
-);
-
 if (isset($_GET["action"]) and $_GET["action"] == "update") {
-    $updateModal = "SELECT project_title FROM projects WHERE project_id = ?";
-    $stmt = $connection->prepare($updateModal);
-    $stmt->bind_param("i", $_GET["id"]);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $result = selectProject($connection, $_GET["id"]);
 
     if (mysqli_num_rows($result) == 1) {
         $row = $result->fetch_assoc();
@@ -50,40 +28,35 @@ if (isset($_POST["update"])) {
     $update_arr["project"] = $_POST["project_title"];
     $id = $_GET["id"];
 
-    if (empty($_POST["project_title"])) {
+    if (empty($update_arr["project"])) {
         $update_arr["project_error"] = "Enter the project title";
     }
 
-    if (!empty($_POST["project_title"]) && !empty($_GET["id"])) {
-        $sql = "UPDATE projects SET project_title = ? WHERE project_id = ?";
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param("si", $update_arr["project"], $id);
-        $stmt->execute();
+    if (!empty($update_arr["project"]) && !empty($id)) {
+        updateProject($connection, $update_arr, $id);
 
-        $stmt->close();
         mysqli_close($connection);
-
         header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
         die();
     }
 }
 
+$add_arr = array(
+    "project" => "",
+    "project_error" => "",
+);
+
 if (isset($_POST["add"])) {
     $add_arr["project"] = $_POST["project_title"];
 
-    if (empty($_POST["project_title"])) {
+    if (empty($add_arr["project"])) {
         $add_arr["project_error"] = "Enter the project title";
     }
 
-    if (!empty($_POST["project_title"])) {
-        $sql = "INSERT INTO projects (project_title) VALUES (?)";
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param("s", $add_arr["project"]);
-        $stmt->execute();
+    if (!empty($add_arr["project"])) {
+        insertProject($connection, $add_arr);
 
-        $stmt->close();
         mysqli_close($connection);
-
         header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
         die();
     }
